@@ -1,15 +1,13 @@
-Welcome to your new dbt project!
+Hello and welcome to ML Astronomy
 
-### Using the starter project
+By Hugo Lu and Carlos Noble Jesus
 
-Try running the following commands:
-- dbt run
-- dbt test
-
-
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+### To dos
+- Abstract metrics calcs into their own macros
+- Better docs
+- More metrics calcs for single grain models 
+  - Including absolute
+- Single grain classifier model (currently we just have absolute)
+- Have run time in there not just run id
+- Create a macro to union tables together and group by run id and run date
+- Add model name
