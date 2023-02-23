@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: regression
+    description: 'Each row in this table represents one prediction per model run date per group of x variables'
+    columns:
+      - name: product
+        description: The product for which the prediction was made

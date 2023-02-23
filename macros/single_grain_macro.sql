@@ -1,6 +1,6 @@
 {% macro single_grain_macro(actuals_table_name, actuals_variable_name, actuals_value, predictions_table_name, predictions_variable_name, predictions_run_id, predictions_value) -%}
 
-, actuals as (
+actuals as (
     select
     {{actuals_value}} actuals_value,
     {{actuals_variable_name}} actuals_variable_name
