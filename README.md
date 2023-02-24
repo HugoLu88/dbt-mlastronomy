@@ -4,6 +4,8 @@
 Welcome to ML Astronomy. ML Astronomy is a package that allows you to seamlessly integrate your actuals with predictions, provided they are in
 your data warehouse of choice already. The basic premise of
 
+![alt text](https://github.com/HugoLu88/dbt-mlastronomy/tree/main/images/staging_data.jpg?raw=true)
+
 ### To dos
 - Abstract metrics calcs into their own macros
 - Better docs
