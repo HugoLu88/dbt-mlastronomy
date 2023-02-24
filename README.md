@@ -4,11 +4,12 @@
 Welcome to ML Astronomy. ML Astronomy is a package that allows you to seamlessly integrate your actuals with predictions, provided they are in
 your data warehouse of choice already. The basic premise of
 
-![alt text](https://github.com/HugoLu88/dbt-mlastronomy/blob/main/staging_data.jpg?raw=true)
+![alt text](https://github.com/HugoLu88/dbt-mlastronomy/blob/main/staging_data.JPG?raw=true)
 
-![alt text](https://github.com/HugoLu88/dbt-mlastronomy/blob/main/images/staging_data.jpg?raw=true)
+![alt text](https://github.com/HugoLu88/dbt-mlastronomy/blob/main/images/staging_data.JPG?raw=true)
 ![alt text](https://https://github.com/HugoLu88/dbt-mlastronomy/tree/main/images/to/img.png)
-![alt text](https://https://github.com/HugoLu88/dbt-mlastronomy/tree/main/images/to/staging_data.png)
+![alt text](https://https://github.com/HugoLu88/dbt-mlastronomy/tree/main/images/to/staging_data.jpg)
+![alt text](https://https://github.com/HugoLu88/dbt-mlastronomy/tree/main/images/to/staging_data.JPG)
 
 ### To dos
 - Abstract metrics calcs into their own macros
