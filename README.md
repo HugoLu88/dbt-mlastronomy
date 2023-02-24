@@ -1,6 +1,8 @@
-Hello and welcome to ML Astronomy
+# Hello and welcome to ML Astronomy!
+*By Hugo Lu and Carlos Noble Jesus*
 
-By Hugo Lu and Carlos Noble Jesus
+Welcome to ML Astronomy. ML Astronomy is a package that allows you to seamlessly integrate your actuals with predictions, provided they are in
+your data warehouse of choice already. The basic premise of
 
 ### To dos
 - Abstract metrics calcs into their own macros
