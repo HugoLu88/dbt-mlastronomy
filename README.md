@@ -2,8 +2,9 @@
 *By Hugo Lu and Carlos Noble Jesus*
 
 Welcome to ML Astronomy. ML Astronomy is a package that allows you to seamlessly integrate your actuals with predictions, provided they are in
-your data warehouse of choice already. The basic premise of using raw sources (predictions),
-staging tables (consolidated predictions with actuals) and aggregated tables (aggregated model-level data).
+your data warehouse of choice already. The basic premise is using raw sources (predictions) to get
+staging tables (consolidated predictions with actuals) and then to union into aggregated tables (aggregated model-level data) which you surface
+in a BI tool.
 
 ![alt text](https://github.com/HugoLu88/dbt-mlastronomy/blob/main/images/staging_data.JPG?raw=true)
 
@@ -11,57 +12,57 @@ staging tables (consolidated predictions with actuals) and aggregated tables (ag
 
 1. Find your actuals
 
-Firstly, you should find the table in your warehouse that corresponds to the actual values. This might be 
-historical clicks on a movie users have made after being recommended a menu of movies. It might be
-historical revenue or usage numbers.
+  Find the table in your warehouse that corresponds to the actual values. This might be 
+  historical clicks on a movie users have made after being recommended a menu of movies. It might be
+  historical revenue or usage numbers.
 
 2. Pick your model and macro
-
-Pick your model predictions that you want to consolidate with actuals. If this is a regression model, choose the regression macro.
-If this is a binary classifier model, choose the binary_classifier macro etc. 
+  
+  Pick your model predictions that you want to consolidate with actuals. If this is a regression model, choose the regression macro.
+  If this is a binary classifier model, choose the binary_classifier macro etc. 
 
 3. Create a new SQL file calling the macro
 
-You should call the macro in a new SQL file to create the staging table. Ideally the name should be "model_name_staging".
-You may need to form a sub-query to get your actuals. If you do this, start the model with a 
-```
-with actuals as (...),
-```
+  You should call the macro in a new SQL file to create the staging table. Ideally the name should be "model_name_staging".
+  You may need to form a sub-query to get your actuals. If you do this, start the model with a 
+  ```
+  with actuals as (...),
+  ```
 
 4. Pick parameters
 
-The parameters are
+  The parameters are
 
-- actuals_table_name: the name of the table to pick actuals. This can be a ref to a subquery
-- actuals_variables: a comma separated list of column names for which predictions are made e.g. ['CLIENT','DATE']
-  - These can be specified as a var in dbt_project.yml and referenced in the macro *without* curly brackets
-- actuals_value_name: the name of the column storing the prediction value
-- predictions_table_name: as above, for predictions
-- predictions_variables as above, for predictions
-- predictions_run_id: the column name containing the run_id, a unique identifier for every model run
-- predictions_run_time: the column name containing the model run time, the time the model was run
-- predictions_value_name:as above, for predictions
-- materialize: how to materialize the model, defaults to 'table'. Incrementality is supported
-- window: the window type incremental models look back, defaults to 'day'
-- duration: the window length incremental models look back, defaults 1. This means incremental models will fetch 1 days' worth of data and update by default
+  - actuals_table_name: the name of the table to pick actuals. This can be a ref to a subquery
+  - actuals_variables: a comma separated list of column names for which predictions are made e.g. ['CLIENT','DATE']
+    - These can be specified as a var in dbt_project.yml and referenced in the macro *without* curly brackets
+  - actuals_value_name: the name of the column storing the prediction value
+  - predictions_table_name: as above, for predictions
+  - predictions_variables as above, for predictions
+  - predictions_run_id: the column name containing the run_id, a unique identifier for every model run
+  - predictions_run_time: the column name containing the model run time, the time the model was run
+  - predictions_value_name:as above, for predictions
+  - materialize: how to materialize the model, defaults to 'table'. Incrementality is supported
+  - window: the window type incremental models look back, defaults to 'day'
+  - duration: the window length incremental models look back, defaults 1. This means incremental models will fetch 1 days' worth of data and update by default
 
 5. Create aggregate tables
 
-This simply involes creating another sql file in "aggregate" which can be called {{model_type}}_statistics_aggregated.
-This model will be one row per model per model run and contain aggregated metrics across all models over time
-for models of a specific type. What this means is we can happily lump all regression models together as they 
-all should have the same set of metrics we care about e.g. absolute error.
-
-Similarly, we may wish to store classifiers in their own aggregate table because aggregate metrics such as true positive
-rates are simply not relevant for regression models.
-
-Only one variable needs to be specified here which is a list of table names. Again, this can be stored in the dpt_project.yml file like:
-
-```
-
-'regression_models': ['revenue_predictions_staging','usage_predictions_staging']
-
-```
+  This simply involes creating another sql file in "aggregate" which can be called {{model_type}}_statistics_aggregated.
+  This model will be one row per model per model run and contain aggregated metrics across all models over time
+  for models of a specific type. What this means is we can happily lump all regression models together as they 
+  all should have the same set of metrics we care about e.g. absolute error.
+  
+  Similarly, we may wish to store classifiers in their own aggregate table because aggregate metrics such as true positive
+  rates are simply not relevant for regression models.
+  
+  Only one variable needs to be specified here which is a list of table names. Again, this can be stored in the dpt_project.yml file like:
+  
+  ```
+  
+  'regression_models': ['revenue_predictions_staging','usage_predictions_staging']
+  
+  ```
 
 ## What the data should look like
 
@@ -83,16 +84,57 @@ For example, if I am predicting a value for every client for every day, then the
 
 ### Staging tables
 
-Staging tables represent
+Staging tables have the same structure as predictions but some more columns
+
+  - PREDICTION_VALUE
+  - {{metrics}}
+
+mlastronomy auto-includes all the metrics we think you may need, but it is straightforward to add additional columns
+by nesting the macro call in a sub-query or submit a PR for mlastronomy :)
+
+### Aggregate tables
+
+Aggregate tables are one row per model per model run. They contain aggregated information on different models that are of the same
+type. See Quickstart (5) for more info on this. These tables should also have nicely defined yml files
+that can be surfaced into semantic layers / BI Tools, as they are the final level.
 
 ## Why would we want to do this?
+
+There are lots of reasons we might want to monitor actual model performance over time.
+
+- See if a model is actually performing as expected
+- Monitor the performance of alternative models to inform switching models
+- Monitor changes in performance metrics relative to a specific event in time
+
+# Considerations
+
+This approach will not be appropriate for a few use cases.
+
+1. Super quick ML
+
+  If you are doing super quick ML where you continually train, test and deploy models, then this package won't be relevant
+  for you! You hopefully have a much more mature stack that allows real-time data ingestion, transformation,
+  model training, model selecting and model deployment. This means you don't need to do this in dbt :)
+
+2. You have loads and loads of data
+  
+  If you have loads and loads of data, these dbt models are going to get expensive quite quickly. mlastronomy
+  supports incremental loads so you don't need to recreate all the tables every time, but be aware this may be expensive
+  in terms of cloud compute. You could get around this by *limiting* the amount of data you include from the predictions
+  in a random way.
+
+3. You run models very frequently
+
+  This is basically the same point as (2). If you have loads of models, you'll need to run these macros more regularly
+  or do larger runs less frequently. This could be expensive.
+  
+  However, in a well-designed Machine Learning infrastructure, there is arguably little reason to re-train, predict and 
+  store data at more than say an hour's frequency. If there is and you are considering using this package, then a 
+  more sophisticated streaming approach may be best.
+
 
 
 ### To dos
 - Abstract metrics calcs into their own macros
-- Better docs
-
-- Single grain classifier model (currently we just have absolute)
-
+- Classifier model
 - Create a macro to union tables together and group by run id and run date
-- Add model name
