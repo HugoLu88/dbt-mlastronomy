@@ -55,7 +55,8 @@ predictions as (
         {% endfor %}
         {{predictions_run_id}} predictions_run_id,
         {{predictions_run_time}} predictions_run_time,
-        {{predictions_value_name}} predictions_value
+        {{predictions_value_name}} predictions_value,
+        '{{predictions_table_name}}' predictions_table_name
     from {{predictions_table_name}}
 )
 select
@@ -66,7 +67,8 @@ select
        {% for val in predictions_variables %}
        ifnull(cast(predictions.{{val}} as string), 'null'),
        {% endfor %}
-       ifnull(cast(predictions.predictions_run_id as string), 'null')
+       ifnull(cast(predictions.predictions_run_id as string), 'null'),
+       ifnull(cast(predictions.predictions_table_name as string), 'null')
        )) _pk,
        (actuals.actuals_value - predictions.predictions_value) abs_error,
        div0((actuals.actuals_value - predictions.predictions_value), actuals.actuals_value) pct_error
