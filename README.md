@@ -137,4 +137,4 @@ This approach will not be appropriate for a few use cases.
 ### To dos
 - Abstract metrics calcs into their own macros
 - Classifier model
-- Create a macro to union tables together and group by run id and run date
+- Add grouping to aggregate model and dynamic variable selection
