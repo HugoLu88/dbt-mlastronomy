@@ -36,7 +36,7 @@
 {% for item in tables_ %}
     select *,
       '{{item}}' table_name
-    from {{item}}
+    from {{ref(item)}}
     {% if is_incremental() %}
       -- this filter will only be applied on an incremental run
     where predictions_run_time >= dateadd({{window}}, -{{duration}}, current_date())
