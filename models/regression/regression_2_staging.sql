@@ -23,7 +23,7 @@ with actuals_staging as (
 
 {{regression(
 'actuals_staging', var('actuals_variables'), 'companies',
-'ds_product_acc_forecast_v2', var('predictions_variables'), 'RUN_DATE', 'RUN_DATE', 'VALUE', materialize = 'incremental',
+'ds_acc_product_forecast', var('predictions_variables'), 'RUN_DATE', 'RUN_DATE', 'VALUE', materialize = 'incremental',
 
   duration = 30
 )}}
