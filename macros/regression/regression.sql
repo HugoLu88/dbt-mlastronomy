@@ -48,6 +48,7 @@ actuals as (
         {{actuals_value_name}} actuals_value
     from {{actuals_table_name }}
 ),
+
 predictions as (
     select
         {% for val in predictions_variables %}
@@ -63,15 +64,21 @@ select
 
     predictions.*,
     actuals.actuals_value,
+    -- This only works if empty values are excluded
+    avg(actuals.actuals_value) over (partition by predictions.predictions_run_id order by predictions.predictions_run_id) model_average,
+    count(*) over (partition by predictions.predictions_run_id order by predictions.predictions_run_id) observations,
+    -- Macro calcs
+    {{abs_error('actuals_value', 'predictions_value')}},
+    {{pct_error('actuals_value', 'predictions_value')}},
+    {{squares('predictions_value', 'model_average')}},
+    -- Primary  key
     sha2_binary(concat(
        {% for val in predictions_variables %}
        ifnull(cast(predictions.{{val}} as string), 'null'),
        {% endfor %}
        ifnull(cast(predictions.predictions_run_id as string), 'null'),
        ifnull(cast(predictions.predictions_table_name as string), 'null')
-       )) _pk,
-       (actuals.actuals_value - predictions.predictions_value) abs_error,
-       div0((actuals.actuals_value - predictions.predictions_value), actuals.actuals_value) pct_error
+       )) _pk
 
 from predictions
 left join actuals
@@ -84,6 +91,7 @@ on
 
 {% endfor %}
 where predictions.predictions_value is not null and lower(predictions.predictions_value) != 'nan'
+and actuals.actuals_value is not null and lower(actuals.actuals_value) != 'nan'
 {% if is_incremental() %}
   -- this filter will only be applied on an incremental run
   and predictions_run_time >= dateadd({{window}}, -{{duration}}, current_date())
