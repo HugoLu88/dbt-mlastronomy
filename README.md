@@ -132,7 +132,33 @@ This approach will not be appropriate for a few use cases.
   store data at more than say an hour's frequency. If there is and you are considering using this package, then a 
   more sophisticated streaming approach may be best.
 
+### Accuracy metrics
 
+Implicitly, these sets of models join in actuals for predictions *wherever they are available*.
+
+This means that as time goes by, there may be more and more actuals available for a particular model. This means that accuracy
+metrics will change over time which may be undesirable. It also makes comparing models difficult.
+For example, if you use the aggregated table to compare a regression model which is 1 year old to one which is only 
+1 month old, then the year-old one will have more predictions than the month-old one, and may be more / less
+accurate.
+
+There are two solutions to this problem
+
+1. Model accuracy metrics only on specific joins or sets of data
+   This would require tracking metrics for models after a specified date or time period. It could even rate "the first n"
+   observations
+2. Use the same test set across all models of the same type
+   This ensures that every set of predictions is for an observation specifically designated for testing. This is probably 
+   not a very practical solution because as time goes by, the observations in the test set which are unlabelled become labelled,
+   which means the test set will need to change anyway
+
+Generally we prefer the first approach combined with good planning. For example, if you want to monitor 3 separate models
+for the same thing, then planning how to track them really helps. You can implement all three at once, have them all make predictions
+to your warehouse at once, and monitor them in real-time without needing to worry about these factors (because they're implemented together).
+This is greatly preferable to essentially "normalisising" metrics.
+
+
+   
 
 ### To dos
 - Abstract metrics calcs into their own macros
