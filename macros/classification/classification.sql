@@ -1,27 +1,22 @@
-{% macro regression(actuals_table_name,
-                    actuals_variables,
-                    actuals_value_name,
-                    predictions_table_name,
-                    predictions_variables,
-                    predictions_run_id,
-                    predictions_run_time,
-                    predictions_value_name,
-                    materialize = 'table',
-                    window = 'day',
-                    duration= 1) -%}
+{% macro classification(actuals_table_name,
+                        actuals_variables,
+                        actuals_value_name,
+                        predictions_table_name,
+                        predictions_variables,
+                        predictions_run_id,
+                        predictions_run_time,
+                        predictions_value_name,
+                        materialize = 'table',
+                        window = 'day',
+                        duration= 1) -%}
 
--- Macro to consolidate actuals to predictions at any level of granularity
--- i.e. one prediction per combination of n variables. For example,
--- usage of an api for different api clients on different days
 
 {% if materialize == 'incremental' %}
-
 
     {{config(
         materialized = 'incremental',
         unique_key = '_pk'
     )}}
-
 
 {% elif materialize == 'view' %}
 
@@ -39,6 +34,7 @@
 
 
 {% endif %}
+
 
 actuals as (
     select
@@ -64,14 +60,13 @@ predictions as (
 select
     predictions.*,
     actuals.actuals_value,
-    -- This only works if empty values are excluded
-    avg(actuals.actuals_value) over (partition by predictions.predictions_run_id order by predictions.predictions_run_id) model_average,
-    count(*) over (partition by predictions.predictions_run_id order by predictions.predictions_run_id) observations,
     -- Macro calcs
-    {{abs_error('actuals_value', 'predictions_value')}},
-    {{pct_error('actuals_value', 'predictions_value')}},
-    {{squares('predictions_value', 'model_average')}},
-    -- Primary  key
+    {{correct_classification('actuals_value', 'predictions_value')}},
+    {{true_positive('actuals_value', 'predictions_value')}},
+    {{true_negative('actuals_value', 'predictions_value')}},
+    {{false_positive('actuals_value', 'predictions_value')}},
+    {{false_negative('actuals_value', 'predictions_value')}},
+    -- Primary key
     sha2_binary(concat(
        {% for val in predictions_variables %}
        ifnull(cast(predictions.{{val}} as string), 'null'),
@@ -84,7 +79,7 @@ from predictions
 left join actuals
 on
 {% for item in actuals_variables %}
-    actuals.{{ item }}=predictions.{{predictions_variables[loop.index0]}}
+    actuals.{{ item }} = predictions.{{predictions_variables[loop.index0]}}
     {% if not loop.last %}
         and
     {% endif %}

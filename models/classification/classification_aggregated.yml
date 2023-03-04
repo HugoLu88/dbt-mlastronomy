@@ -1,0 +1,6 @@
+version: 2
+
+models:
+  - name: classification_aggregated
+    description: 'Each row in this table represents one model run date per group of x variables'
+    

@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: classification_staging
+    description: 'Each row in this table represents one prediction per model run date per group of x variables'
+    columns:
+      - name: companyguid
+        description: The company Id for the company for which the prediction was made
