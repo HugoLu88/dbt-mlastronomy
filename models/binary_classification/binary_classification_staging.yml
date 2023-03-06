@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: classification_staging
+  - name: binary_classification_staging
     description: 'Each row in this table represents one prediction per model run date per group of x variables'
     columns:
       - name: companyguid
