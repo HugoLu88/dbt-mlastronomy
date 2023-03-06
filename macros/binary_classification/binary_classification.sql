@@ -1,4 +1,4 @@
-{% macro classification(actuals_table_name,
+{% macro binary_classification(actuals_table_name,
                         actuals_variables,
                         actuals_value_name,
                         predictions_table_name,

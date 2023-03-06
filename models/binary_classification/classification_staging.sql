@@ -24,7 +24,7 @@ with actuals_staging as (
     where clean_clients.client_type in ('Client Prod', 'Client StartUp')
 ) ,
 
-{{classification(
+{{binary_classification(
     'actuals_staging',
     var('actuals_variables_clf'),
     'is_active_in_month4',

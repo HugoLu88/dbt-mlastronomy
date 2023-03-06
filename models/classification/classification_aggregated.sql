@@ -1,1 +1,0 @@
-{{classification_aggregated(var('classification_models'))}}

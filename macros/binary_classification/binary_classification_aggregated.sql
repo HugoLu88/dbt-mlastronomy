@@ -1,4 +1,4 @@
-{% macro classification_aggregated(tables_,
+{% macro binary_classification_aggregated(tables_,
                     materialize = 'table',
                     window = 'day',
                     duration = 1) -%}
