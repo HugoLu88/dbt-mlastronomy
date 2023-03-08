@@ -2,5 +2,4 @@
 
 avg({{abs_error}})
 
-
 {% endmacro %}

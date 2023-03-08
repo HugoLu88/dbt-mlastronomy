@@ -19,7 +19,10 @@ vars:
   'run_time': 'RUN_TIME'
   'actuals_variables': ['DATE','PRODUCT']
   'predictions_variables': ['DATE','PRODUCT']
+  'actuals_variables_clf': ['COMPANYGUID']
+  'predictions_variables_clf': ['COMPANYGUID']
   'regression_models': ['regression_staging','regression_2_staging']
+  'binary_classification_models': ['binary_classification_staging']
 
 models:
   mlastronomy:

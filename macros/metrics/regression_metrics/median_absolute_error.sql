@@ -2,5 +2,4 @@
 
 median({{abs_error}})
 
-
 {% endmacro %}
